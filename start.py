@@ -42,8 +42,11 @@ class pet():
         # m.add_command(label ="Move", command = self.move) 
         # m.add_command(label ="Laugh", command = self.laugh)  
         
+        self.dragging = False
+        
         self.window.bind('<Button-1>', self.SaveLastClickPos)
         self.window.bind('<B1-Motion>', self.Dragging)  
+        self.window.bind('<ButtonRelease-1>', self.exitDragging)  
         
         self.lastClickX = 0 
         self.lastClickY = 0 
@@ -58,7 +61,8 @@ class pet():
 
         # create a window of size 128x128 pixels, at coordinates 0,0
         self.x = 0
-        self.window.geometry('64x64+{x}+0'.format(x=str(self.x)))
+        self.y = 0
+        self.window.geometry('64x64+%s+%s'%(str(self.x), str(self.y)))
 
         # add the image to our label
         self.label.configure(image=self.img)
@@ -67,20 +71,23 @@ class pet():
         self.label.pack()
 
         # run self.update() after 0ms when mainloop starts
+
         self.window.after(0, self.update, self.idle)
         self.window.mainloop()
         
     def SaveLastClickPos(self,event):
+        self.dragging = True
         self.lastClickX = event.x
         self.lastClickY = event.y
 
-
     def Dragging(self,event):
-        x, y = event.x - self.lastClickX + self.window.winfo_x(), event.y - self.lastClickY + self.window.winfo_y()
-        self.window.geometry("+%s+%s" % (x , y))    
-            
+        self.dragging = True
+        self.x, self.y = event.x - self.lastClickX + self.window.winfo_x(), event.y - self.lastClickY + self.window.winfo_y()
+        self.window.geometry('64x64+%s+%s'%(str(self.x), str(self.y)))
     
-        
+    def exitDragging(self, event):
+        self.dragging = False
+        self.update(random.choices(self.actions, weights=[0.9, 0.1], k=1)[0])
         
     #make window movable
     def move(self):
@@ -93,26 +100,27 @@ class pet():
 
     def update(self, frames):
         # advance frame if 50ms have passed
-        if time.time() > self.timestamp + 0.05:
-            self.timestamp = time.time()
-            # advance the frame by one, wrap back to 0 at the end
-            if self.frame_index < len(frames)-1:
-                self.frame_index = self.frame_index + 1
-                self.img = frames[self.frame_index]
-            elif self.frame_index == len(frames)-1:
-                self.frame_index = 0
-                frames = self.updateFrames(frames)
-                self.img = frames[self.frame_index]
+        if not self.dragging:
+            if time.time() > self.timestamp + 0.05:
+                self.timestamp = time.time()
+                # advance the frame by one, wrap back to 0 at the end
+                if self.frame_index < len(frames)-1:
+                    self.frame_index = self.frame_index + 1
+                    self.img = frames[self.frame_index]
+                elif self.frame_index == len(frames)-1:
+                    self.frame_index = 0
+                    frames = self.updateFrames(frames)
+                    self.img = frames[self.frame_index]
 
-        # create the window
-        self.window.geometry('64x64+{x}+0'.format(x=str(self.x)))
-        # add the image to our label
-        self.label.configure(image=self.img)
-        # give window to geometry manager (so it will appear)
-        self.label.pack()
+            # create the window
+            self.window.geometry('64x64+%s+%s'%(self.x, self.y))
+            # add the image to our label
+            self.label.configure(image=self.img)
+            # give window to geometry manager (so it will appear)
+            self.label.pack()
 
-        # call update after 10ms
-        self.window.after(10, self.update, self.idle)
+            # call update after 10ms
+            self.window.after(10, self.update, self.idle)
         
     def speak(self):
         self.newWindow = tk.Tk()
