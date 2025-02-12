@@ -12,6 +12,7 @@ TODO: add a gif here
 
 ## Feature #2: Pop-up menu on right click
 TODO: add a gif here
+- original feature: dialogues as pop-up windows
 
 ## Requirements
 Python version `3.12.0` is used, however any version of Python over `3.10.0` should work.
@@ -19,7 +20,9 @@ Python version `3.12.0` is used, however any version of Python over `3.10.0` sho
 In terms of library requirements, please check our [requirements.txt](https://github.com/annieqqa/customisable-desktop-pet/blob/main/requirements.txt) file.
 
 ## Customisation
-TODO
+To customise
+- Add your own gifs in [media](https://github.com/annieqqa/customisable-desktop-pet/blob/main/media) and change the file names in [start.py](https://github.com/annieqqa/customisable-desktop-pet/blob/main/start.py)
+- Add dialogues in [dialogues.py](https://github.com/annieqqa/customisable-desktop-pet/blob/main/dialogues.py)
 
 ## License
 This project is licensed under the *MIT* license. See our [LICENSE](LICENSE) for more information.
